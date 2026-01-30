@@ -205,3 +205,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# 내 프로젝트 전용 설정
+data/          # 원본 데이터셋 폴더
+models/        # 학습 완료된 모델(.pt, .bin) 저장 폴더
+results/       # 학습 로그나 결과 리포트
+*.json         # (보안상 원본 JSON이 깃에 올라가는 걸 방지)
