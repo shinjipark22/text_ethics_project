@@ -69,29 +69,24 @@ def main():
     model = get_model(MODEL_NAME, num_labels=2)
     model.to(device)
 
+    # 저장 경로 미리 설정
+    safe_model_name = MODEL_NAME.replace("/", "-")
+    output_dir = f"./models/{PROJECT_NAME}_{safe_model_name}"
+
     # 6. 학습 시작
-    model = train_model(
+    model, best_metrics = train_model(
         model,
         train_dataset,
         val_dataset,
         device,
+        tokenizer,
+        output_dir,
         epochs=3,
         batch_size=32
     )
 
-    # 7. 학습된 모델 저장
-    print("모델 저장 중...")
-
-    safe_model_name = MODEL_NAME.replace("/", "-")
-
-    output_dir = f"./models/{PROJECT_NAME}_{safe_model_name}"
-
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    model.save_pretrained(output_dir)
-    tokenizer.save_pretrained(output_dir)
-
+    # 7. 결과 출력
+    print(f"\n 최종 Best 성적 - F1: {best_metrics['f1']:.4f}, Acc: {best_metrics['accuracy']:.4f}")
     print("모든 작업 완료")
 
     # 8. Hugging Face Hub에 업로드

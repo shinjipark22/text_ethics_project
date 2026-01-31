@@ -10,7 +10,7 @@ def flat_accuracy(preds, labels):
     label_flat = labels.flatten()
     return np.sum(pred_flat == labels_flat) / len(labels_flat)
 
-def train_model(model, train_dataset, val_dataset, device, epochs=3, batch_size=32):
+def train_model(model, train_dataset, val_dataset, device, tokenizer, output_dir, epochs=3, batch_size=32):
 
     # 1. 데이터 로더 준비
     train_dataloader = DataLoader(
@@ -39,6 +39,10 @@ def train_model(model, train_dataset, val_dataset, device, epochs=3, batch_size=
         num_warmup_steps=0,
         num_training_steps=total_steps
     ) # 시작하자마자 2e-5, 끝날 때는 속도를 점점 줄여서 0으로 만들기
+
+    # 최고 점수 기록용 변수
+    best_f1 = 0.0
+    best_metrics = {}
 
     # 3. 에폭 반복 시작
     for epoch_i in range(0, epochs):
@@ -134,5 +138,19 @@ def train_model(model, train_dataset, val_dataset, device, epochs=3, batch_size=
         print(f"    Accuracy: {val_accuracy:.4f}")
         print(f"    F1-Score: {val_f1:.4f}")
 
+        # 최고 점수 갱신 시 자동 저장
+        if val_f1 > best_f1:
+            print(f"Best Score 갱신 ({best_f1:.4f} -> {val_f1:.4f}) 모델 저장 중...")
+            best_f1 = val_f1
+            best_metrics = {'accuracy': val_accuracy, 'f1': val_f1}
+
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+            
+            model.save_pretrained(output_dir)
+            tokenizer.save_pretrained(output_dir)
+        else:
+            print(f"    (Best Score : {best_f1:.4f} 유지 - 저장 안 함)")
+
     print("모든 학습 과정 완료")
-    return model
+    return model, best_metrics
