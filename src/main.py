@@ -11,6 +11,10 @@ from trainer import train_model
 
 
 def main():
+    PROJECT_NAME = "text_ethics"
+
+    MODEL_NAME = "bert-base-multilingual-cased" # 모델 바꾸고 싶으면 여기만 수정
+
     # 1. GPU 장치 설정
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"현재 사용 장치: {device}")
@@ -40,7 +44,7 @@ def main():
 
     # 3. 데이터 전처리 (토크나이징)
     print("\n 데이터 전처리 시작")
-    tokenized_train, tokenized_test, tokenizer = process_data(train_df, test_df)
+    tokenized_train, tokenized_test, tokenizer = process_data(train_df, test_df, MODEL_NAME)
 
     # 4. Dataset 만들기
     print("Dataset으로 감싸는 중")
@@ -49,7 +53,7 @@ def main():
 
     # 5. 모델 로드
     print("BERT 모델 초기화")
-    model = get_model(num_labels=2)
+    model = get_model(MODEL_NAME, num_labels=2)
     model.to(device)
 
     # 6. 학습 시작
@@ -64,7 +68,13 @@ def main():
 
     # 7. 학습된 모델 저장
     print("모델 저장 중...")
-    output_dir = "./models"
+
+    safe_model_name = MODEL_NAME.replace("/", "-")
+
+    output_dir = f"./models/{PROJECT_NAME}_{safe_model_name}"
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
     model.save_pretrained(output_dir)
     tokenizer.save_pretrained(output_dir)
