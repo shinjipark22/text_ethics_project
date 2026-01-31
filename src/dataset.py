@@ -14,10 +14,11 @@ class EthicsDataset(Dataset):
 
     def __getitem__(self, idx):
         # 데이터를 하나씩 꺼내주는 곳
-        item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
-        item['labels'] = torch.tensor(self.labels[idx])
+        item = self.encodings[idx]
+        final_item = {key: torch.tensor(val) for key, val in item.items() if key in ['input_ids', 'attention_mask', 'token_type_ids']}
+        final_item['labels'] = torch.tensor(self.labels[idx])
 
-        return item
+        return final_item
 
     def __len__(self):
         # 전체 데이터의 개수를 알려줌
