@@ -1,9 +1,14 @@
 import glob
 import pandas as pd
+import torch
+import os
+
 from data_loader import load_data
 from processor import process_data
 from model import get_model
-import torch
+from dataset import EthicsDataset
+from trainer import train_model
+
 
 def main():
     # 1. GPU 장치 설정
@@ -37,36 +42,34 @@ def main():
     print("\n 데이터 전처리 시작")
     tokenized_train, tokenized_test, tokenizer = process_data(train_df, test_df)
 
-    print("\n 전처리 샘플 확인")
-    print(f"원문: {train_df.iloc[0]['text']}")
-    print(f"Input IDs: {tokenized_train[0]['input_ids'][:10]}...")
-    print(f"Attention Mask: {tokenized_train[0]['attention_mask'][:10]}...")
+    # 4. Dataset 만들기
+    print("Dataset으로 감싸는 중")
+    train_dataset = EthicsDataset(tokenized_train, train_df['label'].to_list())
+    val_dataset = EthicsDataset(tokenized_test, test_df['label'].to_list())
 
-    # 4. 모델 로드 및 GPU 탑재
-    print("\n BERT 모델 불러오기, GPU 탑재")
-
-    model = get_model(num_labels=2) # 0: Clean, 1: Immoral
+    # 5. 모델 로드
+    print("BERT 모델 초기화")
+    model = get_model(num_labels=2)
     model.to(device)
 
-    print("모델 로드 완료")
+    # 6. 학습 시작
+    model = train_model(
+        model,
+        train_dataset,
+        val_dataset,
+        device,
+        epochs=3,
+        batch_size=32
+    )
 
-    # 5. Dry Run
-    print("\n test dry run 시작")
-    
-    sample_input_id = torch.tensor([tokenized_train[0]['input_ids']]).to(device)
-    sample_mask = torch.tensor([tokenized_train[0]['attention_mask']]).to(device)
+    # 7. 학습된 모델 저장
+    print("모델 저장 중...")
+    output_dir = "./models"
 
-    # 모델에 넣어보기 (예측)
-    model.eval() # 평가 모드로 전환 (학습 X)
-    with torch.no_grad():
-        outputs = model(sample_input_id, attention_mask=sample_mask)
+    model.save_pretrained(output_dir)
+    tokenizer.save_pretrained(output_dir)
 
-    print("테스트 주행 성공")
-    print(f"출력 결과 크기: {outputs.logits.shape}")
-    print(f"예측값: {outputs.logits}")
-
-    predicted_label_id = torch.argmax(outputs.logits, dim=1).item()
-    print(f"모델 판단: {'Immoral' if predicted_label_id == 1 else 'Clean'}")
+    print("모든 작업 완료")
 
 if __name__ == "__main__":
     main()
