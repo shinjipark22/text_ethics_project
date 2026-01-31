@@ -35,7 +35,7 @@ def train_model(model, train_dataset, val_dataset, device, epochs=3, batch_size=
     total_steps = len(train_dataloader) * epochs
 
     scheduler = get_linear_schedule_with_warmup(
-        Optimizer,
+        optimizer,
         num_warmup_steps=0,
         num_training_steps=total_steps
     ) # 시작하자마자 2e-5, 끝날 때는 속도를 점점 줄여서 0으로 만들기
