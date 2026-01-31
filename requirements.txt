@@ -1,16 +1,18 @@
 # 핵심 프레임워크 (GPU 연산용)
-torch>=2.4.0        
-torchvision         
-torchaudio          
+torch>=2.4.0      
+torchvision           
+torchaudio            
 
 # HuggingFace 생태계
 transformers>=4.44.0
 datasets>=2.21.0
 evaluate>=0.4.0
 accelerate>=0.33.0
+huggingface_hub>=0.24.0
 
 # 데이터 처리 및 유틸리티
 pandas>=2.0.0
 numpy>=1.24.0
 scikit-learn>=1.3.0
 tqdm>=4.65.0
+python-dotenv>=1.0.0

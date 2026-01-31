@@ -2,6 +2,8 @@ import glob
 import pandas as pd
 import torch
 import os
+from dotenv import load_dotenv
+from huggingface_hub import login
 
 from data_loader import load_data
 from processor import process_data
@@ -11,8 +13,19 @@ from trainer import train_model
 
 
 def main():
-    PROJECT_NAME = "text_ethics"
+    load_dotenv() # .env 파일 찾아서 로드
 
+    HF_TOKEN = os.getenv("HF_TOKEN")
+    HF_USERNAME = os.getenv("HF_USERNAME")
+
+    if HF_TOKEN:
+        print(f"Hugging Face 로그인중... (User: {HF_USERNAME})")
+        login(token=HF_TOKEN)
+    else:
+        print(".env 파일에서 HF_TOKEN을 열 수 없음. 업로드 에러가 발생할 수 있음.")
+
+
+    PROJECT_NAME = "text_ethics"
     MODEL_NAME = "bert-base-multilingual-cased" # 모델 바꾸고 싶으면 여기만 수정
 
     # 1. GPU 장치 설정
@@ -32,7 +45,7 @@ def main():
         df = load_data(path)
         all_train_df.append(df)
 
-    # 데이터 히니러 합치기
+    # 데이터 히니로 합치기
     train_df = pd.concat(all_train_df, ignore_index=True)
 
     # 테스트 데이터 가져오기 
@@ -80,6 +93,20 @@ def main():
     tokenizer.save_pretrained(output_dir)
 
     print("모든 작업 완료")
+
+    # 8. Hugging Face Hub에 업로드
+    if HF_TOKEN and HF_USERNAME:
+        sanitized_name = MODEL_NAME.replace("/", "-")
+        repo_id = f"{HF_USERNAME}/{PROJECT_NAME}-{sanitized_name}"
+
+        print(f"\n Hugging Face Hub에 업로드 중... (Target: {repo_id})")
+
+        model.push_to_hub(repo_id, private=False)
+        tokenizer.push_to_hub(repo_id, private=False)
+
+        print(f"업로드 완료! 주소: https://huggingface.co/{repo_id}")
+    else:
+        print("\n 토큰이 없어서 업로드 건너뜀.")
 
 if __name__ == "__main__":
     main()
