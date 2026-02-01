@@ -8,7 +8,7 @@ from sklearn.metrics import f1_score
 
 def flat_accuracy(preds, labels):
     pred_flat = np.argmax(preds, axis=1).flatten()
-    label_flat = labels.flatten()
+    labels_flat = labels.flatten()
     return np.sum(pred_flat == labels_flat) / len(labels_flat)
 
 def train_model(model, train_dataset, val_dataset, device, tokenizer, output_dir, epochs=3, batch_size=32):
@@ -28,7 +28,7 @@ def train_model(model, train_dataset, val_dataset, device, tokenizer, output_dir
 
     # 2. 학습 도구 설정
     # Optimizer : AdamW
-    optimizer = AdamW(model.parameters(), lr=2e-5, eps=1e-8)
+    optimizer = AdamW(model.parameters(), lr=1e-5, eps=1e-8)
 
     # scheduler
     # 학습 초반에는 천천히 예열, 나중에는 속도 조절

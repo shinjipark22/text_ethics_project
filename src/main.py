@@ -26,7 +26,7 @@ def main():
 
 
     PROJECT_NAME = "text_ethics"
-    MODEL_NAME = "bert-base-multilingual-cased" # 모델 바꾸고 싶으면 여기만 수정
+    MODEL_NAME = "beomi/kcbert-base" # 모델 바꾸고 싶으면 여기만 수정
 
     # 1. GPU 장치 설정
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -71,7 +71,7 @@ def main():
 
     # 저장 경로 미리 설정
     safe_model_name = MODEL_NAME.replace("/", "-")
-    output_dir = f"./models/{PROJECT_NAME}_{safe_model_name}"
+    output_dir = f"./models/EXP-03_{PROJECT_NAME}_{safe_model_name}"
 
     # 6. 학습 시작
     model, best_metrics = train_model(
@@ -81,7 +81,7 @@ def main():
         device,
         tokenizer,
         output_dir,
-        epochs=3,
+        epochs=5,
         batch_size=32
     )
 
