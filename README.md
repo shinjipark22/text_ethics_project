@@ -145,10 +145,5 @@ def main():
 ]
 ```
 
----
 **Author:** Shinji Park  
-<<<<<<< HEAD
 **Last Updated:** 2026.02.01
-=======
-**Last Updated:** 2026.01.31
->>>>>>> 0c78c3760c7ed2637214fa0faf59d1b798628a75
