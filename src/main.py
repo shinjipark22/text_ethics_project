@@ -25,9 +25,9 @@ def main():
     else:
         print(".env 파일에서 HF_TOKEN을 열 수 없음. 업로드 에러가 발생할 수 있음.")
 
-    EXP_ID = "MAIN"
+    EXP_ID = "EXP-04"
     PROJECT_NAME = "text_ethics"
-    MODEL_NAME = "bert-base-multilingual-cased" # 모델 바꾸고 싶으면 여기만 수정
+    MODEL_NAME = "beomi/kcbert-base" # 모델 바꾸고 싶으면 여기만 수정
 
     # 1. GPU 장치 설정
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

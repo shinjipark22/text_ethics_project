@@ -34,10 +34,11 @@ def train_model(model, train_dataset, val_dataset, device, tokenizer, output_dir
     # 학습 초반에는 천천히 예열, 나중에는 속도 조절
     # 전체 훈련 횟수 = (데이터 개수 / 배치 크기) * 에폭 수
     total_steps = len(train_dataloader) * epochs
+    num_warmup_steps = int(total_steps * 0.1)
 
     scheduler = get_linear_schedule_with_warmup(
         optimizer,
-        num_warmup_steps=0,
+        num_warmup_steps=num_warmup_steps,
         num_training_steps=total_steps
     ) # 시작하자마자 2e-5, 끝날 때는 속도를 점점 줄여서 0으로 만들기
 
