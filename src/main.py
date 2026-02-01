@@ -18,13 +18,14 @@ def main():
     HF_TOKEN = os.getenv("HF_TOKEN")
     HF_USERNAME = os.getenv("HF_USERNAME")
 
+   
     if HF_TOKEN:
         print(f"Hugging Face 로그인중... (User: {HF_USERNAME})")
         login(token=HF_TOKEN)
     else:
         print(".env 파일에서 HF_TOKEN을 열 수 없음. 업로드 에러가 발생할 수 있음.")
 
-
+    EXP_ID = "MAIN"
     PROJECT_NAME = "text_ethics"
     MODEL_NAME = "bert-base-multilingual-cased" # 모델 바꾸고 싶으면 여기만 수정
 
@@ -71,7 +72,7 @@ def main():
 
     # 저장 경로 미리 설정
     safe_model_name = MODEL_NAME.replace("/", "-")
-    output_dir = f"./models/{PROJECT_NAME}_{safe_model_name}"
+    output_dir = f"./models/{EXP_ID}_{PROJECT_NAME}_{safe_model_name}"
 
     # 6. 학습 시작
     model, best_metrics = train_model(
@@ -91,8 +92,7 @@ def main():
 
     # 8. Hugging Face Hub에 업로드
     if HF_TOKEN and HF_USERNAME:
-        sanitized_name = MODEL_NAME.replace("/", "-")
-        repo_id = f"{HF_USERNAME}/{PROJECT_NAME}-{sanitized_name}"
+        repo_id = f"{HF_USERNAME}/{PROJECT_NAME}-{safe_model_name}-{EXP_ID}"
 
         print(f"\n Hugging Face Hub에 업로드 중... (Target: {repo_id})")
 
