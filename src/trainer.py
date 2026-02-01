@@ -8,7 +8,7 @@ from sklearn.metrics import f1_score
 
 def flat_accuracy(preds, labels):
     pred_flat = np.argmax(preds, axis=1).flatten()
-    label_flat = labels.flatten()
+    label_flats = labels.flatten()
     return np.sum(pred_flat == labels_flat) / len(labels_flat)
 
 def train_model(model, train_dataset, val_dataset, device, tokenizer, output_dir, epochs=3, batch_size=32):
