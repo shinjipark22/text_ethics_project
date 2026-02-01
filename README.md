@@ -1,8 +1,8 @@
 # ⚖️ Text Ethics Classification Project (AI 윤리 검증 모델)
 
-이 프로젝트는 **비윤리적인 문장(Immoral Sentences)**을 탐지하기 위해 BERT 기반의 사전 학습된 모델(Pre-trained Model)을 파인튜닝(Fine-tuning)하는 파이프라인입니다.
+이 프로젝트는 비윤리적인 문장(Immoral Sentences)을 탐지하기 위해 BERT 기반의 사전 학습된 모델(Pre-trained Model)을 파인튜닝(Fine-tuning)하는 파이프라인입니다.
 
-Hugging Face `transformers`, `datasets`와 `PyTorch`를 사용하여 데이터 로드부터 전처리, 학습, 평가, 모델 저장, 그리고 **Hugging Face Hub 자동 업로드**까지의 전체 과정을 수행합니다.
+Hugging Face `transformers`, `datasets`와 `PyTorch`를 사용하여 데이터 로드부터 전처리, 학습, 평가, 모델 저장, 그리고 Hugging Face Hub 자동 업로드까지의 전체 과정을 수행합니다.
 
 ## 📂 폴더 구조 (Directory Structure)
 
