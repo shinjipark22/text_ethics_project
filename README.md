@@ -8,12 +8,15 @@ Hugging Face `transformers`, `datasets`와 `PyTorch`를 사용하여 데이터 �
 
 ```text
 text_ethics_project/
-├── .env                   # [중요] HF 토큰 및 아이디 저장 (Git 업로드 X)
+├── .env                   # HF 토큰 및 아이디 저장 (Git 업로드 X)
 ├── .gitignore             # 보안 파일(.env) 및 데이터 제외 설정
 ├── data/
 │   ├── train/             # 학습용 JSON 데이터들이 위치 (.json)
 │   └── test/              # 테스트용 JSON 데이터들이 위치 (.json)
 ├── models/                # 학습 완료된 모델이 저장되는 곳 (자동 생성)
+├── scripts/               # 유틸리티 스크립트 모음
+│   ├── eval_only.py       # 학습된 모델 성능 평가
+│   └── push_to_hf.py      # Hugging Face Hub 수동 업로드
 ├── src/
 │   ├── main.py            # 실행 진입점 (Main Entry Point)
 │   ├── data_loader.py     # JSON 데이터 파싱 및 로드
@@ -27,7 +30,6 @@ text_ethics_project/
 ## 🛠️ 요구 사항 (Requirements)
 
 이 프로젝트를 실행하기 위해 필요한 주요 라이브러리입니다.
-(환경 변수 관리 및 HF Hub 업로드를 위한 라이브러리가 추가되었습니다.)
 
 * Python 3.8+
 * PyTorch (CUDA 권장)
@@ -35,9 +37,7 @@ text_ethics_project/
 * Datasets (Hugging Face)
 * Hugging Face Hub (모델 업로드)
 * Python-dotenv (환경 변수 로드)
-* Pandas
-* Scikit-learn
-* Tqdm
+* Pandas, Scikit-learn, Tqdm
 
 ```bash
 pip install torch transformers datasets huggingface_hub python-dotenv pandas scikit-learn tqdm
@@ -60,22 +60,26 @@ HF_USERNAME=본인_허깅페이스_아이디
 
 ## 🚀 실행 방법 (Usage)
 
+### 1️⃣ 학습 시작 (Training)
 프로젝트 루트 경로에서 아래 명령어를 실행하면 학습이 시작됩니다.
 
 ```bash
 python src/main.py
 ```
 
-실행 시 다음과 같은 작업이 순차적으로 진행됩니다.
+### 2️⃣ 모델 평가 (Evaluation)
+학습된 모델을 로드하여 테스트 데이터셋에 대한 성능(F1, Accuracy)만 빠르게 확인합니다.
 
-1.  **환경 설정 로드**: `.env` 파일을 읽어 Hugging Face에 로그인합니다.
-2.  **GPU 확인**: CUDA 사용 가능 여부를 확인하고 RTX 4060 등 GPU 정보를 출력합니다.
-3.  **데이터 로드**: `data/train` 및 `data/test` 폴더의 모든 JSON 파일을 읽어옵니다.
-4.  **전처리**: 설정된 모델(`bert-base-multilingual-cased`)의 Tokenizer로 텍스트를 변환합니다.
-5.  **학습(Train)**: 설정된 Epoch(기본 3)만큼 학습을 진행하며 Loss를 출력합니다.
-6.  **평가(Validation)**: Epoch마다 정확도(Accuracy)와 F1-Score를 계산합니다.
-7.  **저장(Save)**: 학습된 모델과 토크나이저를 `./models/` 폴더에 로컬 저장합니다.
-8.  **업로드(Upload)**: 학습된 모델을 **Hugging Face Hub**의 본인 계정 리포지토리로 자동 업로드합니다.
+```bash
+python scripts/eval_only.py
+```
+
+### 3️⃣ 수동 업로드 (Manual Upload)
+학습 중 네트워크 오류 등으로 업로드가 실패했거나, 로컬 모델을 나중에 업로드할 때 사용합니다.
+
+```bash
+python scripts/push_to_hf.py
+```
 
 ## ⚙️ 설정 변경 (Configuration)
 
@@ -109,12 +113,14 @@ def main():
 
 | 파일명 | 설명 |
 |---|---|
-| **`main.py`** | 전체 파이프라인을 총괄하는 컨트롤 타워입니다. 환경 변수 로드부터 학습, HF 업로드까지 수행합니다. |
-| **`data_loader.py`** | 복잡한 JSON 구조에서 `text`와 `is_immoral` 라벨을 추출하여 Pandas DataFrame으로 변환합니다. |
-| **`processor.py`** | Hugging Face의 `Dataset` 객체로 변환하고, `AutoTokenizer`를 사용해 고속으로 토크나이징합니다. |
-| **`dataset.py`** | 토크나이징된 데이터를 PyTorch 모델에 주입할 수 있도록 텐서(Tensor) 형태로 포장하여 반환합니다. |
-| **`model.py`** | `AutoModelForSequenceClassification`을 사용하여 모델을 로드하고, `Clean(0)`/`Immoral(1)` 라벨을 설정합니다. |
-| **`trainer.py`** | 실제 학습이 일어나는 곳입니다. `AdamW` 옵티마이저, 스케줄러, F1-Score 계산 등을 담당합니다. |
+| **`src/main.py`** | 전체 파이프라인을 총괄하는 컨트롤 타워입니다. 환경 변수 로드부터 학습, HF 업로드까지 수행합니다. |
+| **`src/data_loader.py`** | 복잡한 JSON 구조에서 `text`와 `is_immoral` 라벨을 추출하여 Pandas DataFrame으로 변환합니다. |
+| **`src/processor.py`** | Hugging Face의 `Dataset` 객체로 변환하고, `AutoTokenizer`를 사용해 고속으로 토크나이징합니다. |
+| **`src/dataset.py`** | 토크나이징된 데이터를 PyTorch 모델에 주입할 수 있도록 텐서(Tensor) 형태로 포장하여 반환합니다. |
+| **`src/model.py`** | `AutoModelForSequenceClassification`을 사용하여 모델을 로드하고, `Clean(0)`/`Immoral(1)` 라벨을 설정합니다. |
+| **`src/trainer.py`** | 실제 학습이 일어나는 곳입니다. `AdamW` 옵티마이저, 스케줄러, F1-Score 계산 등을 담당합니다. |
+| **`scripts/eval_only.py`** | 저장된 모델을 불러와 성능(Metric)만 측정하는 스크립트 |
+| **`scripts/push_to_hf.py`** | `huggingface_hub` API를 이용해 폴더 전체를 수동 업로드 |
 
 ## 📊 데이터셋 형식 (Data Format)
 
@@ -141,4 +147,4 @@ def main():
 
 ---
 **Author:** Shinji Park  
-**Last Updated:** 2026.01.31
+**Last Updated:** 2026.02.01
