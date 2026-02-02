@@ -28,19 +28,19 @@ def train_model(model, train_dataset, val_dataset, device, tokenizer, output_dir
 
     # 2. 학습 도구 설정
     # Optimizer : AdamW
-    optimizer = AdamW(model.parameters(), lr=2e-5, eps=1e-8)
+    optimizer = AdamW(model.parameters(), lr=1e-5, eps=1e-8)
 
     # scheduler
     # 학습 초반에는 천천히 예열, 나중에는 속도 조절
     # 전체 훈련 횟수 = (데이터 개수 / 배치 크기) * 에폭 수
     total_steps = len(train_dataloader) * epochs
-    num_warmup_steps = int(total_steps * 0.1)
+    num_warmup_steps = int(total_steps * 0.15)
 
     scheduler = get_linear_schedule_with_warmup(
         optimizer,
         num_warmup_steps=num_warmup_steps,
         num_training_steps=total_steps
-    ) # 시작하자마자 2e-5, 끝날 때는 속도를 점점 줄여서 0으로 만들기
+    ) 
 
     # 최고 점수 기록용 변수
     best_f1 = 0.0

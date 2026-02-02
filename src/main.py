@@ -82,7 +82,7 @@ def main():
         device,
         tokenizer,
         output_dir,
-        epochs=3,
+        epochs=5,
         batch_size=32
     )
 

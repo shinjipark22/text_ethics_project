@@ -85,16 +85,16 @@ python scripts/push_to_hf.py
 
 ### 모델 변경하기
 다른 모델(예: KcBERT, RoBERTa 등)로 실험하고 싶다면 `src/main.py` 파일의 상단 변수를 수정하세요.
-업로드 시 리포지토리 이름은 `프로젝트명-모델명` 규칙으로 자동 생성됩니다.
+업로드 시 리포지토리 이름은 `프로젝트명-모델명-실험ID` 규칙으로 자동 생성됩니다.
 
 ```python
 # src/main.py
 
 def main():
+    # 실험 번호를 수정하면 로컬 폴더명과 HF 리포지토리 이름에 자동으로 반영됩니다.
+    EXP_ID = "EXP-04" 
     PROJECT_NAME = "text_ethics"
-    
-    # 원하는 모델명으로 변경 (예: "beomi/kcbert-base", "klue/roberta-base")
-    MODEL_NAME = "bert-base-multilingual-cased" 
+    MODEL_NAME = "beomi/kcbert-base" 
     ...
 ```
 
